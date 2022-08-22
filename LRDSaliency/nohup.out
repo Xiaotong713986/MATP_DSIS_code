@@ -1,0 +1,10 @@
+usage: my_flownet.py [-h] [--use_snapshot USE_SNAPSHOT] [--plotiter PLOTITER]
+                     [--validiter VALIDITER] [--savemodeliter SAVEMODELITER]
+                     [--snapshotincode SNAPSHOTINCODE]
+                     [--trainingexampleprops TRAININGEXAMPLEPROPS]
+                     [--trainingbase TRAININGBASE] [--videolength VIDEOLENGTH]
+                     [--overlap OVERLAP] [--batch BATCH]
+                     [--imagesize IMAGESIZE] [--staticsolver STATICSOLVER]
+                     [--debug DEBUG] [--extramodinfo EXTRAMODINFO]
+my_flownet.py: error: unrecognized arguments: fusenet2.log
+Parsing arguments...
