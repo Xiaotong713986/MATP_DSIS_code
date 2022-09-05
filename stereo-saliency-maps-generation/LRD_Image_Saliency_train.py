@@ -1,18 +1,14 @@
 #!/usr/bin/env python3
 # encoding: utf-8
-import cv2
 import tensorflow as tf
 import sys, os
 import numpy as np
-import tensorflow.contrib.layers as layers
-# qiudan
-import cPickle as pkl
-from DatasetLR import VideoDataset,ImageDataset
+from DatasetLR import ImageDataset
 from LRDSaliencyModel_DeleteCheckerboard1 import Model
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import argparse, cv2, os, glob, sys, time
+import argparse, cv2, os, sys
 import cPickle as pkl
 from utils.pymetric.metrics import CC, SIM, AUC_Judd
 
@@ -58,12 +54,11 @@ def main():
     postfix_str="figure_model_0711"
     batch_size = args.batch
     #training_base = args.trainingbase
-    video_length=args.videolength
-    image_size = args.imagesize 
+    # video_length=args.videolength
+    # image_size = args.imagesize 
     ##
     ##  data
     print ("Loading data...")
-    #tranining_dataset = VideoDataset(train_frame_basedir_left,train_frame_basedir_right, train_density_basedir, img_size=(112,112), bgr_mean_list=[98,102,90], sort='rgb')
     tranining_dataset = ImageDataset(train_frame_basedir_left,train_frame_basedir_right, train_density_basedir, img_size=(112,112), bgr_mean_list=[98,102,90], sort='rgb')
     tranining_dataset.setup_video_dataset_c3d(overlap=args.overlap, training_example_props=args.trainingexampleprops)
     ##
@@ -104,9 +99,9 @@ def main():
     max_iter = 40000
     validation_iter = args.validiter
     plot_iter = args.plotiter
-    epoch=30
-    idx_counter = 0
-    save_model_iter = args.savemodeliter
+    # epoch=30
+    # idx_counter = 0
+    # save_model_iter = args.savemodeliter
     momentum = 0.95
     weight_decay = 0.0005
     init_learning_rate = 1e-3
