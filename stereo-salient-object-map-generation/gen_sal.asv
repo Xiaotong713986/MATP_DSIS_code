@@ -16,13 +16,13 @@ options.width = 50;
 
 out_dir = '.\\output\\';
 
-img_left_dir = '..\\examples\\origin-images\\left';
-img_right_dir = '..\\examples\\origin-images\\right';
+img_left_dir = 'C:\\Users\\Xiao Xiaotong\\Desktop\MATP_DSIS_code\examples\origin-images\left';
+img_right_dir = '/data/qiudan/3DSaliency_Program/Feng_Shao_SIRQA/NBU_SIRQA_Database/NBU_SIRQA_origin/right/';
 ImgsFiles{left} = fullfile(img_left_dir);
 ImgsFiles{right} = fullfile(img_right_dir);
 
-sal_left_dir = '..\\examples\\saliency-maps\\left';
-sal_right_dir = '..\\examples\\saliency-maps\\right';
+sal_left_dir = '/data/qiudan/3DSaliency_Program/Feng_Shao_SIRQA/NBU_SIRQA_Database/CASNet_II_IDSA_left/';
+sal_right_dir = '/data/qiudan/3DSaliency_Program/Feng_Shao_SIRQA/NBU_SIRQA_Database/CASNet_II_IDSA_right/';
 SalFiles{left} = fullfile(sal_left_dir);
 SalFiles{right} = fullfile(sal_right_dir);
 
