@@ -9,8 +9,8 @@ function [im_warped, im_warpedR]=SLWAP(imgName,imL, imR, importance_map, importa
     
     %%%%%%%%%% crop operator %%%%%%%%%%%%%%%%%%
     [new_imgL, new_imgR, importance_map, importance_mapR] =cutImg3(imL, imR, importance_map, importance_mapR, Ratio, hRatio);
-    imwrite(new_imgL,[imgName '_cropL.jpg']);
-    imwrite(new_imgR,[imgName '_cropR.jpg']);
+    imwrite(new_imgL,['tmp\\' imgName '_cropL.jpg']);
+    imwrite(new_imgR,['tmp\\' imgName '_cropR.jpg']);
     [new_h, new_w, ~] = size(new_imgL);
     
     if new_w == Ratio*w && Ratio<1
