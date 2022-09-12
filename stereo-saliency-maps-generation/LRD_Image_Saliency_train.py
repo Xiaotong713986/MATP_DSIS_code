@@ -32,16 +32,16 @@ def get_arguments():
     return parser.parse_args()
 
  
-print "loading data and label ... "
+print("loading data and label ...")
 
 
-train_frame_basedir_left = '/data/qiudan/3DSaliency_Program/Dataset/lxl_database/picture/train/left/'
-train_frame_basedir_right = '/data/qiudan/3DSaliency_Program/Dataset/lxl_database/picture/train/right/'
+train_frame_basedir_left = './lxl_database/picture/train/left/'
+train_frame_basedir_right = './lxl_database/picture/train/right/'
 
-train_density_basedir =  '/data/qiudan/3DSaliency_Program/Dataset/lxl_database/ground_truth/train/left'
+train_density_basedir =  './lxl_database/ground_truth/train/left'
 
 all_path = './results_S3D'
-SaveFile_name = 'save_model_0711'
+SaveFile_name = 'saved_model'
 SaveFile = os.path.join(all_path, SaveFile_name)
 if not os.path.isdir(SaveFile):
     os.makedirs(SaveFile)
@@ -53,16 +53,12 @@ def main():
     '''A2B: Add postfix to identify a model version'''
     postfix_str="figure_model_0711"
     batch_size = args.batch
-    #training_base = args.trainingbase
-    # video_length=args.videolength
-    # image_size = args.imagesize 
-    ##
     ##  data
     print ("Loading data...")
     tranining_dataset = ImageDataset(train_frame_basedir_left,train_frame_basedir_right, train_density_basedir, img_size=(112,112), bgr_mean_list=[98,102,90], sort='rgb')
     tranining_dataset.setup_video_dataset_c3d(overlap=args.overlap, training_example_props=args.trainingexampleprops)
     ##
-    ##  保存figures
+    ## save figures
     plot_figure_dir = all_path
     ## Figure dir
     plot_figure_dir = os.path.join(plot_figure_dir, postfix_str)
@@ -107,21 +103,13 @@ def main():
     init_learning_rate = 1e-3
     
     is_training = True
-    '''
-    inputs_left = tf.placeholder(tf.float32, [batch_size, 112, 112, 3])
-    inputs_right = tf.placeholder(tf.float32, [batch_size, 112, 112, 3])
-    ground_truth = tf.placeholder(tf.float32, [batch_size, 112, 112, 1])
-    '''
 
     inputs_left = tf.placeholder(tf.float32, [batch_size, 112, 112, 3])
     inputs_right = tf.placeholder(tf.float32, [batch_size, 112, 112, 3])
     ground_truth = tf.placeholder(tf.float32, [batch_size, 112, 112, 1])
     # start training...
     pred = Model.LRDSaliency_inference(inputs_left,inputs_right,is_training)
-    #print 'pred:', pred.shape
-    #pred_reshape = tf.reshape(pred, [batch_size, video_length, 112, 112])
-    #print 'pred_reshape:', pred_reshape.shape
-    #exit()
+
     with tf.name_scope('loss'):    
         # L1 loss in c3dsaliency
         loss = tf.reduce_mean(tf.reduce_sum(tf.abs(pred - ground_truth)))
@@ -140,23 +128,23 @@ def main():
         writer = tf.summary.FileWriter("logs/", sess.graph)
 
         init = tf.global_variables_initializer()
-        print "Initialize the variables"
+        print("Initialize the variables")
         sess.run(init)
         
         #Until Now, the pretrained model is not found
         #saver.restore(sess,"./pretrain_model.ckpt") 
         
         saver = tf.train.Saver(tf.global_variables())
-        print "The training stage begins"
+        print("The training stage begins")
         
         _step = 0
         
         while _step < max_iter:
             frame_data_left, frame_data_right, density_data = tranining_dataset.get_frame_LR(mini_batch=batch_size, phase='training', density_length='full')
             summary, L1_loss, _ = sess.run([summary_op, loss, train_op], feed_dict={inputs_left: frame_data_left, inputs_right: frame_data_right, ground_truth: density_data})
-            #print (type(density_data), type(frame_data))
-            print 'The training loss:', L1_loss
-            #print 'The Learning Rate of each step is ', sess.run(optimizer.init_learning_rate)
+
+            print ('The training loss:', L1_loss)
+
             if _step % 2000 ==0:
                 saver.save(sess, SaveFile + '/' + 'train_IDSENet_SVS_',global_step = _step)
                 summary, result_loss, _ = sess.run([summary_op, loss, train_op],feed_dict={inputs_left: frame_data_left, inputs_right: frame_data_right, ground_truth: density_data})
@@ -167,12 +155,12 @@ def main():
             plot_dict['y_loss'].append(L1_loss)
 
             if _step % validation_iter==0:
-                print "Doing validation...", tranining_dataset.num_validation_examples, "validation samples in total."
+                print ("Doing validation...", tranining_dataset.num_validation_examples, "validation samples in total.")
                 tmp_cc = []; tmp_sim = []; tmp_auc = []
                 data_tuple = tranining_dataset.get_frame_LR(mini_batch=batch_size, phase='validation', density_length='one')
                 index = 0
                 while data_tuple is not None:
-                    print index,'\r',
+                    print (index,'\r')
                     sys.stdout.flush()
                     index += 1
                     valid_frame_data_left, valid_frame_data_right, valid_density_data = data_tuple
@@ -182,7 +170,6 @@ def main():
                     valid_density_data = np.reshape(valid_density_data, [-1, 1, 112, 112])
                     # pre_valid [2, 16, 112, 112] valid_density_data [2, 1, 112, 112]
                     for (prediction, valid_density) in zip(pred_valid, valid_density_data):
-                        # print np.array(prediction).shape, np.array(valid_density).shape
                         preds = np.array(prediction[-1])
                         gt = np.array(valid_density[-1])                        
                         tmp_cc.append(CC(preds, gt))
@@ -193,7 +180,7 @@ def main():
                 tmp_cc = np.array(tmp_cc)[~np.isnan(tmp_cc)]
                 tmp_sim = np.array(tmp_sim)[~np.isnan(tmp_sim)]
                 tmp_auc = np.array(tmp_auc)[~np.isnan(tmp_auc)]
-                print "CC, SIM, AUC_JUDD: ", np.mean(tmp_cc), np.mean(tmp_sim), np.mean(tmp_auc)
+                print ("CC, SIM, AUC_JUDD: ", np.mean(tmp_cc), np.mean(tmp_sim), np.mean(tmp_auc))
                 plot_dict['x_valid'].append(_step)
                 plot_dict['y_cc'].append(np.mean(tmp_cc))
                 plot_dict['y_sim'].append(np.mean(tmp_sim))

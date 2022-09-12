@@ -5,7 +5,7 @@ import os
 import time
 from LRDSaliencyModel_S3D_Image import Model
 
-fea_map_output = '/data/qiudan/3DSaliency_Program/Test_20201028/'
+fea_map_output = './output/'
 
 #from LRDSaliencyModel import Model
 config = tf.ConfigProto()
@@ -24,10 +24,11 @@ def get_arguments():
 args = get_arguments()
 os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
 
-model_path = '/data/qiudan/3DSaliency_Program/LRDSaliency/results_S3D/save_model_0422/'
-left_data_path = '/data/qiudan/3DSaliency_Program/Feng_Shao_SIRQA/NBU_SIRQA_Database/NBU_SIRQA_origin/left/'
-right_data_path = '/data/qiudan/3DSaliency_Program/Feng_Shao_SIRQA/NBU_SIRQA_Database/NBU_SIRQA_origin/right/'
-save_path_all = '/data/qiudan/3DSaliency_Program/Feng_Shao_SIRQA/NBU_SIRQA_Database/IDSA_res/'
+model_path = './results_S3D/saved_model'
+left_data_path = './NBU_SIRQA_origin/left/'
+right_data_path = './NBU_SIRQA_origin/right/'
+# save_path_all = './IDSA_res/'
+save_path_all = fea_map_output
 if os.path.isdir(save_path_all):
     pass
 else:
@@ -58,7 +59,7 @@ with tf.Session(config=config) as sess:
         sess.run(init)
         ckpt = tf.train.get_checkpoint_state(model_path)
         if ckpt and ckpt.model_checkpoint_path:
-            print("loading checkpoint %s,waiting......" % ckpt.model_checkpoint_path)
+            print("loading checkpoint %s,waiting......", ckpt.model_checkpoint_path)
             saver.restore(sess, ckpt.model_checkpoint_path)
             print("load complete!")
         save_path = save_path_all + model_name_other + '_test/'
@@ -130,7 +131,7 @@ with tf.Session(config=config) as sess:
             print(save_file_path)
             cv2.imwrite(save_file_path, test)
 
-            print "The %d image Done." % index_image
+            print("The %d image Done.",index_image)
 
             
                     
